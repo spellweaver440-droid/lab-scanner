@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Scanner - Matrix Theme</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background: #0a0e27;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Matrix rain effect background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 0, 0.03) 2px,
+                    rgba(0, 255, 0, 0.03) 4px
+                );
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        header {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(156, 39, 176, 0.1) 100%);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), inset 0 0 20px rgba(0, 255, 0, 0.1);
+        }
+        
+        h1 {
+            color: #00ff00;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #9c27b0;
+            font-size: 2.5em;
+            letter-spacing: 2px;
+        }
+        
+        header p {
+            color: #9c27b0;
+            text-shadow: 0 0 10px #9c27b0;
+            font-size: 1.1em;
+            letter-spacing: 1px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #00ff00 0%, #4caf50 100%);
+            color: #0a0e27;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 15px;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        .scan-form {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%);
+            border: 2px solid #9c27b0;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.3), inset 0 0 20px rgba(156, 39, 176, 0.1);
+        }
+        
+        h2 {
+            color: #00ff00;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00ff00;
+            letter-spacing: 1px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #9c27b0;
+            font-weight: 700;
+            text-shadow: 0 0 5px #9c27b0;
+            letter-spacing: 1px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            font-size: 14px;
+            background: rgba(0, 255, 0, 0.05);
+            color: #00ff00;
+            font-family: 'Roboto Mono', monospace;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #9c27b0;
+            box-shadow: 0 0 10px rgba(156, 39, 176, 0.5), inset 0 0 10px rgba(156, 39, 176, 0.2);
+            background: rgba(156, 39, 176, 0.1);
+        }
+        
+        input::placeholder {
+            color: rgba(0, 255, 0, 0.5);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+            color: #00ff00;
+            padding: 14px 40px;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Roboto Mono', monospace;
+            transition: all 0.3s;
+            text-shadow: 0 0 5px #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+            letter-spacing: 1px;
+        }
+        
+        button:hover {
+            background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%);
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.8), 0 0 10px rgba(0, 255, 0, 0.5);
+            transform: translate(0, -2px);
+        }
+        
+        button:active {
+            transform: translate(0, 0);
+        }
+        
+        .results {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(156, 39, 176, 0.1) 100%);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), inset 0 0 20px rgba(0, 255, 0, 0.1);
+        }
+        
+        .vulnerability {
+            border-left: 4px solid #ff6b6b;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 5px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+        
+        .vulnerability.high {
+            border-left-color: #ff6b6b;
+        }
+        
+        .vulnerability.medium {
+            border-left-color: #ffa940;
+        }
+        
+        .vulnerability.low {
+            border-left-color: #00ff00;
+        }
+        
+        .vulnerability p {
+            color: #9c27b0;
+        }
+        
+        .vulnerability small {
+            color: #00ff00;
+        }
+        
+        .vulnerability strong {
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        .severity-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px currentColor;
+        }
+        
+        .severity-badge.critical {
+            background: rgba(255, 77, 79, 0.3);
+            color: #ff4d4f;
+            border: 1px solid #ff4d4f;
+        }
+        
+        .severity-badge.high {
+            background: rgba(255, 122, 69, 0.3);
+            color: #ff7a45;
+            border: 1px solid #ff7a45;
+        }
+        
+        .severity-badge.medium {
+            background: rgba(255, 169, 64, 0.3);
+            color: #ffa940;
+            border: 1px solid #ffa940;
+        }
+        
+        .severity-badge.low {
+            background: rgba(0, 255, 0, 0.3);
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+        
+        .results p {
+            color: #00ff00;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        .results strong {
+            color: #9c27b0;
+            text-shadow: 0 0 5px #9c27b0;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 255, 0, 0.2);
+            border-top: 4px solid #00ff00;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        
+        .loading p {
+            color: #00ff00;
+            margin-top: 20px;
+            text-shadow: 0 0 10px #00ff00;
+            font-size: 1.1em;
+            letter-spacing: 2px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        small {
+            color: #9c27b0;
+            text-shadow: 0 0 5px #9c27b0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Lab Scanner</h1>
+            <p>Enterprise Vulnerability Scanner - Matrix Edition</p>
+            <span class="status-badge" id="api-status">Checking...</span>
+        </header>
+        
+        <div class="scan-form">
+            <h2>Start Full Nmap Scan</h2>
+            <form id="scanForm">
+                <div class="form-group">
+                    <label for="target">Target Host/IP:</label>
+                    <input type="text" id="target" name="target" placeholder="192.168.1.1 or example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="scanType">Scan Type:</label>
+                    <select id="scanType" name="scanType">
+                        <option value="full" selected>Full Scan (Comprehensive)</option>
+                        <option value="port">Port Scan Only</option>
+                        <option value="service">Service Detection</option>
+                        <option value="web">Web Vulnerability</option>
+                    </select>
+                </div>
+                
+                <button type="submit">▶ INITIATE SCAN</button>
+            </form>
+        </div>
+        
+        <div class="scan-form">
+            <h2>🌐 Network Discovery</h2>
+            <form id="discoveryForm">
+                <div class="form-group">
+                    <label for="networkRange">Network Range (CIDR):</label>
+                    <input type="text" id="networkRange" name="networkRange" placeholder="192.168.1.0/24" required>
+                    <small style="color: #9c27b0; display: block; margin-top: 5px;">Examples: 192.168.1.0/24 (256 hosts), 192.168.0.0/16 (65K hosts)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="discoveryThreads">Discovery Threads:</label>
+                    <input type="number" id="discoveryThreads" name="discoveryThreads" value="50" min="1" max="200">
+                </div>
+                
+                <button type="submit">🔍 DISCOVER ACTIVE HOSTS</button>
+            </form>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>⚙️ SCANNING IN PROGRESS...</p>
+        </div>
+        
+        <div class="results" id="results" style="display: none;">
+            <h2>📊 SCAN RESULTS</h2>
+            <div id="resultsContent"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Check API status
+        async function checkApiStatus() {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2000);
+                
+                const response = await fetch('http://localhost:8000/api/health', {
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                
+                const badge = document.getElementById('api-status');
+                if (response.ok) {
+                    badge.textContent = '✓ API ONLINE';
+                    badge.style.background = 'linear-gradient(135deg, #00ff00 0%, #4caf50 100%)';
+                    badge.style.color = '#0a0e27';
+                } else {
+                    badge.textContent = '✗ API OFFLINE';
+                    badge.style.background = 'linear-gradient(135deg, #ff4d4f 0%, #ff7a45 100%)';
+                    badge.style.color = '#fff';
+                }
+            } catch (e) {
+                const badge = document.getElementById('api-status');
+                badge.textContent = '✗ API OFFLINE';
+                badge.style.background = 'linear-gradient(135deg, #ff4d4f 0%, #ff7a45 100%)';
+                badge.style.color = '#fff';
+            }
+        }
+        
+        // Start scan - defaults to full nmap-style scan
+        document.getElementById('scanForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const target = document.getElementById('target').value.trim();
+            const scanType = document.getElementById('scanType').value || 'full';
+            
+            if (!target) {
+                alert('⚠️ Please enter a target IP or hostname');
+                return;
+            }
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            try {
+                console.log(`🔍 Initiating ${scanType} nmap-style scan on ${target}...`);
+                
+                const response = await fetch('/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target, scan_type: scanType })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('✓ Scan completed:', data);
+                
+                displayResults(data);
+            } catch (error) {
+                console.error('❌ Scan error:', error);
+                alert('⚠️ Scan Error:\n' + error.message);
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+        
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            let html = '';
+            
+            // Header with scan summary
+            html += `
+                <div style="background: rgba(0, 255, 0, 0.1); border: 1px solid #00ff00; border-radius: 5px; padding: 15px; margin-bottom: 20px;">
+                    <p><strong style="color: #00ff00;">🎯 Target:</strong> <span style="color: #9c27b0;">${data.target || 'N/A'}</span></p>
+                    <p><strong style="color: #00ff00;">📅 Timestamp:</strong> ${data.timestamp ? new Date(data.timestamp).toLocaleString() : 'N/A'}</p>
+                    <p><strong style="color: #00ff00;">📊 Scan Type:</strong> <span style="color: #9c27b0;">${data.scan_type || 'Full'}</span></p>
+                </div>
+            `;
+            
+            // Open ports section
+            if (data.open_ports && data.open_ports.length > 0) {
+                html += `
+                    <div style="margin-bottom: 25px;">
+                        <p style="font-size: 1.2em; margin-bottom: 10px;"><strong>🔓 Open Ports Found: </strong><span style="color: #00ff00;">${data.open_ports.length}</span></p>
+                        <p style="margin-left: 20px; color: #00ff00;"><code>${data.open_ports.slice(0, 20).join(', ')}${data.open_ports.length > 20 ? '...' : ''}</code></p>
+                    </div>
+                `;
+            } else {
+                html += `<p style="color: #ffa940;"><strong>ℹ️ No open ports detected</strong></p>`;
+            }
+            
+            // Services section
+            if (data.services && data.services.length > 0) {
+                html += `
+                    <div style="margin-bottom: 25px;">
+                        <p style="font-size: 1.2em; margin-bottom: 15px;"><strong>🔧 Services Detected: </strong><span style="color: #00ff00;">${data.services.length}</span></p>
+                        <div style="margin-left: 20px; display: grid; gap: 10px;">
+                `;
+                data.services.forEach(service => {
+                    const serviceColor = service.service && service.service.toLowerCase().includes('ssh') ? '#00ff00' : 
+                                       service.service && service.service.toLowerCase().includes('http') ? '#ffa940' : '#9c27b0';
+                    html += `
+                        <div style="background: rgba(156, 39, 176, 0.1); border-left: 3px solid ${serviceColor}; padding: 10px; border-radius: 3px;">
+                            <strong style="color: ${serviceColor};">Port ${service.port}</strong> — 
+                            <span style="color: #00ff00;">${service.service || 'Unknown'}</span>
+                            <br/>
+                            <small style="color: #9c27b0;">Banner: ${service.banner || 'N/A'}</small>
+                        </div>
+                    `;
+                });
+                html += `</div></div>`;
+            }
+            
+            // Risk assessment summary
+            if (data.overall_risk_level || data.vulnerability_count !== undefined) {
+                const riskColor = data.overall_risk_level === 'Critical' ? '#ff4d4f' :
+                                data.overall_risk_level === 'High' ? '#ff7a45' :
+                                data.overall_risk_level === 'Medium' ? '#ffa940' : '#00ff00';
+                
+                html += `
+                    <div style="background: rgba(156, 39, 176, 0.15); border: 2px solid #9c27b0; border-radius: 5px; padding: 15px; margin-bottom: 25px;">
+                        <p style="color: #00ff00;"><strong>📈 Risk Assessment</strong></p>
+                        <p style="margin-top: 10px;"><strong>Overall Risk:</strong> <span style="color: ${riskColor}; font-weight: bold; font-size: 1.1em;">${data.overall_risk_level || 'Unknown'}</span></p>
+                        <p><strong>Vulnerabilities Found:</strong> <span style="color: #00ff00;">${data.vulnerability_count || 0}</span></p>
+                        <p><strong>Average Score:</strong> <span style="color: #ffa940;">${data.average_risk_score ? data.average_risk_score.toFixed(2) : '0'} / 10</span></p>
+                        <p><strong>Max Score:</strong> <span style="color: #ff7a45;">${data.max_risk_score ? data.max_risk_score.toFixed(1) : '0'} / 10</span></p>
+                    </div>
+                `;
+            }
+            
+            // Vulnerabilities section
+            if (data.vulnerabilities && data.vulnerabilities.length > 0) {
+                // Sort by severity score
+                const sortedVulns = [...data.vulnerabilities].sort((a, b) => (b.score || 0) - (a.score || 0));
+                
+                html += `
+                    <div style="margin-top: 25px;">
+                        <p style="font-size: 1.2em; margin-bottom: 15px;"><strong>🚨 Detailed Findings: </strong><span style="color: #00ff00;">${sortedVulns.length}</span></p>
+                `;
+                
+                sortedVulns.forEach(vuln => {
+                    const severityClass = (vuln.severity || 'info').toLowerCase();
+                    const severityColor = severityClass === 'critical' ? '#ff4d4f' :
+                                        severityClass === 'high' ? '#ff7a45' :
+                                        severityClass === 'medium' ? '#ffa940' :
+                                        severityClass === 'low' ? '#00ff00' : '#9c27b0';
+                    
+                    html += `
+                        <div class="vulnerability ${severityClass}" style="border-left-color: ${severityColor};">
+                            <div class="severity-badge ${severityClass}" style="border-color: ${severityColor}; color: ${severityColor}; background: rgba(255, 107, 107, 0.1);">${vuln.severity}</div>
+                            <strong style="color: ${severityColor};">${vuln.name || 'Unknown Vulnerability'}</strong>
+                            <p>${vuln.description || 'No description available'}</p>
+                            <small style="color: #00ff00;">
+                                Port: <strong>${vuln.port || 'N/A'}</strong> | 
+                                CVE: <strong>${vuln.cve || 'N/A'}</strong> | 
+                                CVSS: <strong style="color: ${severityColor};">${vuln.score ? vuln.score.toFixed(1) : 'N/A'}</strong>
+                            </small>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            } else if (data.vulnerability_count === 0) {
+                html += `<div style="background: rgba(0, 255, 0, 0.1); border: 1px solid #00ff00; border-radius: 5px; padding: 15px; margin-top: 20px;"><p style="color: #00ff00; font-weight: bold;">✓ No vulnerabilities detected!</p></div>`;
+            }
+            
+            document.getElementById('resultsContent').innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+        
+        // Network discovery
+        document.getElementById('discoveryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const networkRange = document.getElementById('networkRange').value.trim();
+            const threads = parseInt(document.getElementById('discoveryThreads').value) || 50;
+            
+            if (!networkRange) {
+                alert('⚠️ Please enter a network range (e.g., 192.168.1.0/24)');
+                return;
+            }
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            try {
+                console.log(`🌐 Starting network discovery on ${networkRange}...`);
+                
+                const response = await fetch('/discover/network', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ network_range: networkRange, threads })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('✓ Discovery completed:', data);
+                
+                displayDiscoveryResults(data);
+            } catch (error) {
+                console.error('❌ Discovery error:', error);
+                alert('⚠️ Discovery Error:\n' + error.message);
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+        
+        function displayDiscoveryResults(data) {
+            const resultsDiv = document.getElementById('results');
+            let html = '';
+            
+            // Header
+            html += `
+                <div style="background: rgba(0, 255, 0, 0.1); border: 1px solid #00ff00; border-radius: 5px; padding: 15px; margin-bottom: 20px;">
+                    <p><strong style="color: #00ff00;">🌐 Network:</strong> <span style="color: #9c27b0;">${data.network}</span></p>
+                    <p><strong style="color: #00ff00;">📊 Active Hosts Found:</strong> <span style="color: #00ff00; font-weight: bold; font-size: 1.2em;">${data.count}</span></p>
+                </div>
+            `;
+            
+            // Host list
+            if (data.active_hosts && data.active_hosts.length > 0) {
+                html += `
+                    <div style="margin-bottom: 25px;">
+                        <p style="font-size: 1.2em; margin-bottom: 15px;"><strong>✓ Hosts:</strong></p>
+                        <div style="background: rgba(156, 39, 176, 0.1); border: 1px solid #9c27b0; border-radius: 5px; padding: 15px;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;">
+                `;
+                
+                data.active_hosts.forEach(host => {
+                    html += `
+                        <div style="background: rgba(0, 255, 0, 0.1); border: 1px solid #00ff00; border-radius: 3px; padding: 8px; text-align: center; cursor: pointer;" 
+                             onclick="document.getElementById('target').value='${host}'; document.getElementById('scanForm').scrollIntoView({behavior: 'smooth'});">
+                            <strong style="color: #00ff00;">${host}</strong>
+                            <br/>
+                            <small style="color: #9c27b0;">Click to scan</small>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html += `<p style="color: #ffa940;"><strong>ℹ️ No active hosts found on this network</strong></p>`;
+            }
+            
+            // Instructions
+            html += `
+                <div style="background: rgba(156, 39, 176, 0.1); border: 1px solid #9c27b0; border-radius: 5px; padding: 15px; margin-top: 20px;">
+                    <p style="color: #00ff00;"><strong>💡 Next Steps:</strong></p>
+                    <ul style="color: #9c27b0; margin-left: 20px;">
+                        <li>Click any host to scan it individually</li>
+                        <li>Or manually enter IP and run full scan above</li>
+                        <li>Results will show open ports, services, and vulnerabilities</li>
+                    </ul>
+                </div>
+            `;
+            
+            document.getElementById('resultsContent').innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

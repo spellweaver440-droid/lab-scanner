@@ -1,0 +1,252 @@
+#!/usr/bin/env python3
+"""
+Quick Reference Guide for Lab Scanner API
+"""
+
+API_ENDPOINTS = """
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                    LAB SCANNER API - QUICK REFERENCE                     ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+
+🔌 HEALTH & STATUS ENDPOINTS
+─────────────────────────────
+
+GET /api/health
+  Returns: {"status": "healthy", "version": "1.0.0", "timestamp": "..."}
+  Use this to check if API is running
+
+GET /api/status  
+  Returns: API status with all module availability
+  Use to check scanner feature status
+
+
+🔍 SCANNING ENDPOINTS
+─────────────────────
+
+POST /api/scan/port
+  Body: {
+    "target": "192.168.1.1",
+    "ports": "1-1024",           # OR "22,80,443"
+    "threads": 100,
+    "timeout": 2
+  }
+  Returns: Port scan results with open ports list
+
+GET /api/scan/services?target=HOST&ports=22,80,443
+  Returns: Service details including banners and versions
+
+GET /api/scan/web?target=example.com&port=80
+  Returns: Web vulnerability scan results
+  Checks: Headers, SSL, SQL errors, HTTP methods
+
+POST /api/scan/full
+  Body: {"target": "192.168.1.1", "scan_type": "full"}
+  Returns: Complete vulnerability report
+  Includes: Port scan + Services + Vulnerabilities + Risk scoring
+
+
+🔌 PLUGIN MANAGEMENT ENDPOINTS
+───────────────────────────────
+
+GET /api/plugins/list
+  Returns: List of all available plugins with descriptions
+  Example response:
+  {
+    "plugins": [
+      {
+        "name": "FTPAnonymousPlugin",
+        "description": "Tests for FTP servers allowing anonymous access",
+        "severity": "High",
+        "version": "1.0.0"
+      }
+    ],
+    "count": N
+  }
+
+POST /api/plugins/run?plugin_name=NAME&target=HOST&port=PORT&service=SERVICE
+  Executes specific plugin on target/port
+  Example:
+    plugin_name: FTPAnonymousPlugin
+    target: 192.168.1.1
+    port: 21
+    service: FTP
+
+
+📊 TYPICAL WORKFLOW
+───────────────────
+
+1. Check API health
+   GET /api/health
+
+2. Start port scan
+   POST /api/scan/port
+   {"target": "192.168.1.1", "ports": "1-1024"}
+
+3. Get service details
+   GET /api/scan/services?target=192.168.1.1&ports=22,80,443
+
+4. Run web scan (if HTTP port found)
+   GET /api/scan/web?target=192.168.1.1&port=80
+
+5. Execute custom plugins
+   POST /api/plugins/run?plugin_name=WeakHeadersPlugin&target=...&port=80
+
+6. View full report
+   POST /api/scan/full?target=192.168.1.1
+
+
+💡 COMMON CURL COMMANDS
+───────────────────────
+
+# Check API status
+curl http://localhost:8000/api/health
+
+# Quick port scan
+curl -X POST http://localhost:8000/api/scan/port \\
+  -H "Content-Type: application/json" \\
+  -d '{"target": "192.168.1.1", "ports": "1-1024"}'
+
+# List plugins
+curl http://localhost:8000/api/plugins/list
+
+# Run FTP plugin
+curl -X POST \\
+  'http://localhost:8000/api/plugins/run?plugin_name=FTPAnonymousPlugin&target=192.168.1.1&port=21'
+
+# Full scan
+curl -X POST http://localhost:8000/api/scan/full \\
+  -H "Content-Type: application/json" \\
+  -d '{"target": "192.168.1.1"}'
+
+
+🔐 EXAMPLE RESPONSES
+────────────────────
+
+Port Scan Response:
+{
+  "target": "192.168.1.10",
+  "total_ports_scanned": 1024,
+  "open_ports": [22, 80, 443],
+  "closed_ports": 1021,
+  "status": "completed"
+}
+
+Full Scan Response:
+{
+  "target": "192.168.1.10",
+  "scan_type": "full",
+  "status": "completed",
+  "open_ports": [22, 80, 443],
+  "services": [
+    {
+      "port": 22,
+      "service": "SSH",
+      "banner": "OpenSSH_7.4"
+    }
+  ],
+  "vulnerabilities": [
+    {
+      "name": "SSH Service Detected",
+      "severity": "Info",
+      "description": "SSH service running",
+      "port": 22,
+      "score": 0.1
+    }
+  ],
+  "vulnerability_count": 5,
+  "overall_risk_level": "Medium",
+  "average_risk_score": 4.5,
+  "max_risk_score": 9.0
+}
+
+⚙️ PARAMETER REFERENCE
+──────────────────────
+
+target: str
+  - Hostname or IP address to scan
+  - Examples: "192.168.1.1", "example.com"
+
+ports: str
+  - Port range or comma-separated list
+  - Examples: "1-1024", "22,80,443", "1-65535"
+
+threads: int
+  - Number of concurrent scanning threads
+  - Range: 1-1000 (default: 100)
+  - Higher = faster but more resource usage
+
+timeout: int
+  - Connection timeout in seconds
+  - Range: 1-60 (default: 2)
+
+scan_type: str
+  - Type of scan to perform
+  - Options: "full", "port", "web", "service", "quick"
+
+
+🎯 SCANNING RECOMMENDATIONS
+────────────────────────────
+
+Quick Scan (< 1 minute):
+  POST /api/scan/port
+  {"target": "192.168.1.1", "ports": "1-1024", "threads": 200, "timeout": 1}
+
+Thorough Scan (5-10 minutes):
+  POST /api/scan/full
+  {"target": "192.168.1.1", "scan_type": "full"}
+
+Large Network Scan:
+  Use distributed agents to scan multiple targets in parallel
+
+Web Server Assessment:
+  GET /api/scan/web?target=example.com&port=80
+
+
+📈 RESPONSE SEVERITY LEVELS
+────────────────────────────
+
+Critical: 9.0 - Immediate action required
+High:     7.0 - Action needed soon
+Medium:   5.0 - Monitor and address
+Low:      3.0 - Address in next maintenance
+Info:     0.1 - Informational only
+
+
+🚀 STARTING THE API SERVER
+──────────────────────────
+
+From project root:
+
+# Terminal 1: Start API
+python -m app.main
+
+# Terminal 2: Start Dashboard
+cd dashboard && python app.py
+
+# Terminal 3 (optional): Start Agent
+python run_agent.py agent-01
+
+Access:
+  • API: http://localhost:8000
+  • API Docs: http://localhost:8000/api/docs
+  • Dashboard: http://localhost:5000
+
+
+📚 FURTHER DOCUMENTATION
+────────────────────────
+
+For more details, see:
+  ✓ README.md - Full project documentation
+  ✓ API Docs - http://localhost:8000/api/docs (interactive)
+  ✓ PROJECT_SUMMARY.txt - Complete architecture overview
+  ✓ Code comments - Inline documentation in each module
+
+
+═════════════════════════════════════════════════════════════════════════════
+Use this quick reference while developing. For complex scenarios, check
+the full README.md and inline code documentation. 🔍
+"""
+
+if __name__ == "__main__":
+    print(API_ENDPOINTS)

@@ -1,0 +1,23 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+
+# Display settings
+Name=Lab Scanner
+Comment=Professional Vulnerability Scanner - Nmap/Nikto Style
+GenericName=Network Scanner
+
+# Execution
+Exec=bash "%HOME%/.local/share/lab-scanner/launcher.sh"
+Terminal=false
+StartupNotify=true
+
+# Appearance
+Icon=network-wired
+Categories=Utility;Security;NetworkOperation;System;
+
+# Metadata
+X-Desktop-File-Install-Version=0.24
+Keywords=scanner;security;network;vulnerability;
+X-KDE-SubstituteUID=false
+X-KDE-Username=

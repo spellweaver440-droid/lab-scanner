@@ -1,0 +1,64 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: lab_scanner
+      POSTGRES_USER: scanner
+      POSTGRES_PASSWORD: scanner_pass_123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scanner"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Lab Scanner API
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://scanner:scanner_pass_123@db:5432/lab_scanner
+      LOG_LEVEL: INFO
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./app:/app/app
+    networks:
+      - lab_network
+
+  # Flask Dashboard
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    ports:
+      - "5000:5000"
+    environment:
+      API_URL: http://api:8000/api
+    depends_on:
+      - api
+    networks:
+      - lab_network
+
+  # Redis Cache (optional)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - lab_network
+
+volumes:
+  postgres_data:
+
+networks:
+  lab_network:
+    driver: bridge
