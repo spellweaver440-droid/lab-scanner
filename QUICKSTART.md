@@ -1,32 +1,62 @@
-# Lab Scanner Quickstart Guide
+# QUICKSTART
 
-Welcome to the Lab Scanner! This guide will help you get started with using the Lab Scanner quickly and efficiently. Below, you'll find the necessary setup instructions, features, and tips for optimal use.
+## Installation
 
-## 1. Getting Started
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/spellweaver440-droid/lab-scanner.git
+   cd lab-scanner
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-To begin, clone the repository and navigate to the project directory. Make sure you have all necessary dependencies installed. Follow the steps below:
+## Launching
 
+To launch the application, run:
 ```bash
-git clone https://github.com/spellweaver440-droid/lab-scanner.git
-cd lab-scanner
-npm install
+npm start
 ```
 
-## 2. 🌐 Lab Scanner Dashboard
+## 🌐 Lab Scanner Dashboard
 
-The Lab Scanner Dashboard provides a user-friendly interface for managing your scans. Here’s a quick preview:
-![Dashboard Screenshot](path_to_dashboard_screenshot.png)
+![Lab Scanner Dashboard Interface](./screenshots/dashboard.png)
 
-## 3. Features
+## Network Discovery
 
-- **Real-time updates**: Get instant feedback on your scans.
-- **Customizable settings**: Adjust parameters for specific lab environments.
-- **Reporting tools**: Export your scan results easily.
+Use the Network Discovery feature to scan for devices on your local network. Simply click on the "Discover" button in the dashboard.
 
-## 4. Tips and Tricks
+## Configuration
 
-- Always ensure you have the latest version of the scanner.
-- Utilize the reporting tools to keep track of your scans and results.
-- Engage with the community for troubleshooting tips and best practices.
+You can configure various settings in the `config.json` file located in the root of the project.
 
-Thank you for using Lab Scanner! For further documentation, visit [Documentation Link].
+## Advanced Usage
+
+For advanced users, the application supports command line arguments. You can run `npm start -- --arg=value` to pass additional parameters.
+
+## System Requirements
+
+- Node.js >= 14.x
+- npm >= 6.x
+
+## Troubleshooting
+
+If you encounter issues, please check the console for errors. Common issues include:
+- Missing dependencies: run `npm install` again.
+- Incorrect configuration: ensure all paths in `config.json` are correct.
+
+## Features Overview
+
+- Real-time network scanning
+- User-friendly dashboard
+- Responsive design
+
+## Quick Reference
+
+- To start the application, run `npm start`
+- To configure settings, edit `config.json`
+
+## Support
+
+For support, please open an issue on GitHub or contact us directly at support@example.com.
