@@ -250,6 +250,22 @@ cd ~/.local/share/lab-scanner && \
 ## 🤝 Support
 
 If you encounter issues:
+. go to terminal
+`/
+cd 'Lab Scanner.desktop'
+sudo chmod +x 'Lab Scanner.desktop' 
+nano ~/Desktop/'Lab scanner.desktop' 
+[Desktop Entry]
+Name=Lab Scanner
+Comment=Launch Lab Scanner
+Exec=/home/hons/Desktop/launch-lab-scanner.sh
+Icon=/home/hons/Desktop/scanner2/icon.png
+Terminal=true
+Type=Application
+Categories=Utility;
+lab-scanner-*.log`
+save and exit or try:
+
 1. Check the logs in `/tmp/lab-scanner-*.log`
 2. Ensure Python 3.8+ is installed
 3. Try reinstalling: `bash ~/Desktop/scanner2/INSTALLER.sh`
